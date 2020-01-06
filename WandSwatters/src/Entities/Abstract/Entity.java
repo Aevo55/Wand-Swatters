@@ -61,6 +61,10 @@ public abstract class Entity {
         return new Color(col.getRGB());
     }
     
+    public void setCol(Color _col){
+        col = new Color(_col.getRGB());
+    }
+    
     public Color getColRef(){
         return col;
     }

@@ -67,7 +67,7 @@ public abstract class GraphicsEngine {
     }
     
     private static void fillOval(Graphics gc, SphericalEntity e){
-        gc.fillOval((int)(e.getCenter().getX()-e.getRadius()), (int)(e.getCenter().getY()-e.getRadius()), (int)e.getRadius(), (int)e.getRadius());
+        gc.fillOval((int)(e.getCenter().getX()-e.getRadius()), (int)(e.getCenter().getY()-e.getRadius()), (int)e.getRadius()*2, (int)e.getRadius()*2);
     }
     
     private static void setColour(Graphics gc, Color c){

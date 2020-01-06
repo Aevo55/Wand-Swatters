@@ -32,7 +32,7 @@ public abstract class Util {
     }
     
     public static boolean Inside(double a, double b, double c){
-        return (a <= b && b <= c);
+        return (a <= b && b <= c) || (c <= b && b <= a);
     }
     
     public static ArrayList<Coord> HashToCoord(ArrayList<String> _i, ArrayList<Coord> _c){

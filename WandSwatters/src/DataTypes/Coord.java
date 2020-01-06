@@ -92,4 +92,8 @@ public class Coord {
         }
         return equals((Coord)obj);
     }
+    
+    public double distanceTo(Coord c){
+        return new Line(this, c).getMag();
+    }
 }

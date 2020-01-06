@@ -7,6 +7,7 @@ package Entities;
 
 import DataTypes.Coord;
 import Entities.Abstract.SphericalEntity;
+import java.awt.Color;
 
 /**
  *
@@ -14,14 +15,17 @@ import Entities.Abstract.SphericalEntity;
  */
 public class TestSphericalEntity extends SphericalEntity{
 
+    public TestSphericalEntity(Coord start, double rad, Color _col){
+        super(start, rad);
+        this.col = _col;
+    }
+    
     public TestSphericalEntity(Coord start, double rad) {    
         super(start, rad);
-        System.out.println("FOUND IT");
     }
 
     public TestSphericalEntity(){
         super(new Coord(500,500), 20);
-        System.out.println("Found it!!!!");
     }
     
     @Override

@@ -14,13 +14,11 @@ public class MapLoader {
     public MapLoader(){
         mapList = new ArrayList<>();
     
-        m0n0 = new Net(new Coord[]{new Coord(100,100), new Coord(100,200), new Coord(200,200), new Coord(200,100)});
-        m0n1 = new Net(new Coord[]{new Coord(300,300), new Coord(300,500), new Coord(500,500), new Coord(500,300)});
+        m0n0 = new Net(new Coord[]{new Coord(0,0), new Coord(100,300), new Coord(200,200), new Coord(200,100)});
 
         m0w0 = new Wall(m0n0, Color.BLACK, 1);
-        m0w1 = new Wall(m0n1, Color.BLUE, 1);
 
-        m0 = new Map("Map 0", m0w0 /*whats this?*/, m0w1);
+        m0 = new Map("Map 0", m0w0 /*whats this?*/);
 
         mapList.add(m0);
     }

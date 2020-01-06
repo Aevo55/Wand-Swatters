@@ -41,7 +41,7 @@ public class Line {
             slope = rise / run;
         }
         intercept = p1.getY() - (p1.getX()*slope);
-        intercept *= (int)(slope / Math.abs(slope));
+        //intercept *= (int)(slope / Math.abs(slope));
         
         double _angle = ((Math.atan2(rise, run))/(Math.PI)*180);
         angle = new Angle();
@@ -70,7 +70,7 @@ public class Line {
             run = Math.cos(angle.getRad())*mag;
             slope = rise / run;
             intercept = p1.getY() - (p1.getX()*slope);
-            intercept *= (int)(slope / Math.abs(slope));
+            //intercept *= (int)(slope / Math.abs(slope));
             p2 = p1.offset(run, rise);
         }
     }
@@ -131,6 +131,14 @@ public class Line {
         return run;
     }
     
+    public double getMag(){
+        return mag;
+    }
+    
+    public void setMag(double m){
+        recalc(this.p1, this.angle, m);
+    }
+    
     public Coord getP1(){
         return p1.getLoc();
     }
@@ -157,5 +165,21 @@ public class Line {
     
     public void rotateBy(Angle a){
         recalc(this.getP1(), this.angle.offset(a), this.mag);
+    }
+    
+    public void rotateTo(Angle a){
+        recalc(this.getP1(), a, this.mag);
+    }
+    
+    public Line[] getShadows(double r){
+        Line[] shadows = new Line[2];
+        
+        Line anchor_1 = new Line(getP1(), getAng().offset(90), r);
+        Line anchor_2 = new Line(getP1(), getAng().offset(-90), r);
+        
+        shadows[0] = new Line(anchor_1.getP2(), getAng(), getMag());
+        shadows[1] = new Line(anchor_2.getP2(), getAng(), getMag());
+        
+        return shadows;
     }
 }
