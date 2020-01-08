@@ -6,28 +6,59 @@
 package Utility;
 import Entities.Abstract.*;
 import DataTypes.*;
+import java.util.ArrayList;
 public abstract class Collider {
-    public static void hit(Entity e, Map m){
-        if(SphericalEntity.class.isInstance(e)){
-            hit((SphericalEntity)e,m);
+    public static boolean hit(Entity e, ArrayList<Entity> _e){
+        boolean flag = false;
+        for(Entity __e : _e){
+            flag = flag || hit(e, __e);
         }
-    }
-    public static void hit(SphericalEntity e, Map m){
-        m.getWalls().forEach((n) -> hit(e, n));
+        return flag;
     }
     
-    public static void hit(SphericalEntity e, Net n){
-        boolean flag = false;
-        while(flag == false){
-            flag = true;
-            for(Line l : n.lines){
-                Angle a = hit(e, l);
-                if(a != null){
-                    flag = false;
-                    e.getVelocityRef().rotateTo(new Angle((2 * a.getDeg()) - e.getVelocity().getAng().getDeg()));
-                }
+    public static boolean hit(Entity e, Entity _e){
+        if(SphericalEntity.class.isInstance(e)){
+            if(SphericalEntity.class.isInstance(_e)){
+                return hit((SphericalEntity)e,(SphericalEntity)_e);
+            }else{
+                return hit((SphericalEntity)e,(PolygonalEntity)_e);
+            }
+        }else{
+            if(SphericalEntity.class.isInstance(_e)){
+                return hit((PolygonalEntity)e,(SphericalEntity)_e);
+            }else{
+                return hit((PolygonalEntity)e,(PolygonalEntity)_e);
             }
         }
+    }
+    
+    public static boolean hit(Entity e, Map m){
+        if(SphericalEntity.class.isInstance(e)){
+            return hit((SphericalEntity)e,m);
+        }else{
+            return hit((PolygonalEntity)e,m);
+        }
+    }
+    public static boolean hit(SphericalEntity e, Map m){
+        boolean flag = false;
+        for(Net n: m.getWalls()){
+            Angle a = hit(e, n);
+            if(a != null){
+                flag = true;
+                e.getVelocityRef().rotateTo(new Angle((2 * a.getDeg()) - e.getVelocity().getAng().getDeg()));
+            }
+        }
+        return flag;
+    }
+    
+    public static Angle hit(SphericalEntity e, Net n){
+        for(Line l : n.lines){
+            Angle a = hit(e, l);
+            if(a != null){
+                return a;
+            }
+        }
+        return null;
     }
     
     public static Angle hit(SphericalEntity e, Line l){

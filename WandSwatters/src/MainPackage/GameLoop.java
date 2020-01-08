@@ -29,6 +29,11 @@ public class GameLoop extends JPanel implements Runnable {
     TestPolygonEntity manguyman;
     TestSphericalEntity testplayer;
     
+    boolean w = false, ww = false,
+            a = false, aa = false,
+            s = false, ss = false,
+            d = false, dd = false;
+    
     public GameLoop() {
         
         mapLoader = new MapLoader();
@@ -64,36 +69,69 @@ public class GameLoop extends JPanel implements Runnable {
     }
     public void keyPressed(KeyEvent evt){
         switch(evt.getKeyCode()){
-            case KeyEvent.VK_D:
+            case KeyEvent.VK_SPACE:
                 shapeToggle = true;
                 break;
             case KeyEvent.VK_ESCAPE:
                 System.exit(0);
                 break;
+            case KeyEvent.VK_W:
+                w = true;
+                ww = true;
+                ss = false;
+                break;
             case KeyEvent.VK_A:
+                a = true;
+                aa = true;
+                dd = false;
                 break;
-            case KeyEvent.VK_UP:
-                testplayer.setVelocity(new Line(new Coord(0,0), new Coord(0,-3)));
+            case KeyEvent.VK_S:
+                s = true;
+                ss = true;
+                ww = false;
                 break;
-            case KeyEvent.VK_DOWN:
-                testplayer.setVelocity(new Line(new Coord(0,0), new Coord(0,3)));
-                break;
-            case KeyEvent.VK_LEFT:
-                testplayer.setVelocity(new Line(new Coord(0,0), new Coord(-3,0)));
-                break;
-            case KeyEvent.VK_RIGHT:
-                testplayer.setVelocity(new Line(new Coord(0,0), new Coord(3,0)));
+            case KeyEvent.VK_D:
+                d = true;
+                dd = true;
+                aa = false;
                 break;
         }
     }
 
     public void keyReleased(KeyEvent evt){
         switch(evt.getKeyCode()){
-            case KeyEvent.VK_D:
+            case KeyEvent.VK_SPACE:
                 shapeToggle = false;
                 break;
-            case KeyEvent.VK_A:
+            case KeyEvent.VK_W:
+                w = false;
+                ww = false;
+                if(s){
+                    ss = true;
+                }
                 break;
+            case KeyEvent.VK_A:
+                a = false;
+                aa = false;
+                if(d){
+                    dd = true;
+                }
+                break;
+            case KeyEvent.VK_S:
+                s = false;
+                ss = false;
+                if(w){
+                    ww = true;
+                }
+                break;
+            case KeyEvent.VK_D:
+                d = false;
+                dd = false;
+                if(a){
+                    aa = true;
+                }
+                break;
+                
         }
     }
     
@@ -115,6 +153,8 @@ public class GameLoop extends JPanel implements Runnable {
         manguyman.getCurveRef().setDeg(-5);
         //entities.add(manguyman);
         
+        entities.forEach((e) -> e.Tick());
+        
         while(true){
             long currTime = System.currentTimeMillis();
             if(currTime != fpsTracker){
@@ -124,10 +164,41 @@ public class GameLoop extends JPanel implements Runnable {
             }
             
             repaint();
-            entities.forEach((e) -> e.Tick());
-            for(Entity e : entities){
-                Collider.hit(e, currMap);
+            
+            if(ww || aa || ss || dd){
+                int wi = ww ? 1 : 0;
+                int ai = aa ? 1 : 0;
+                int si = ss ? 1 : 0;
+                int di = dd ? 1 : 0;
+                
+                Line lw = new Line(new Coord(0,0), new Angle(270), wi);
+                Line la = new Line(new Coord(0,0), new Angle(180), ai);
+                Line ls = new Line(new Coord(0,0), new Angle(90), si);
+                Line ld = new Line(new Coord(0,0), new Angle(0), di);
+                
+                testplayer.getVelocityRef().addTo(lw);
+                testplayer.getVelocityRef().addTo(la);
+                testplayer.getVelocityRef().addTo(ls);
+                testplayer.getVelocityRef().addTo(ld);
+                
+                if(testplayer.getVelocity().getMag() > 5){
+                    testplayer.getVelocityRef().setMag(5);
+                }
+            }else{
+                testplayer.getVelocityRef().mulMag(0.95);
             }
+            
+            boolean colliderFlag = true;
+            while(colliderFlag == true){
+                for(Entity e : entities){
+                    colliderFlag = Collider.hit(e, currMap);
+                    //colliderFlag = colliderFlag || Collider.hit(e, new ArrayList<Entity>(entities.subList(entities.indexOf(e), entities.size())));
+                }
+            }
+            
+            
+            entities.forEach((e) -> e.Tick());
+            
             try {
                 //**/Thread.sleep(30);/*/
                 Thread.sleep(16,500000);//*/

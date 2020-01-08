@@ -18,6 +18,11 @@ public class Line {
     private Coord p1, p2;
     private double mag;
     
+    public Line(Coord _p1, Coord _p2, double _mag){
+        recalc(_p1, _p2);
+        recalc(p1, angle, _mag);
+    }
+    
     public Line(Line l){
         recalc(l.getP1(), l.getP2());
     }
@@ -49,7 +54,7 @@ public class Line {
         mag = Math.sqrt(Math.pow(rise,2)+Math.pow(run,2));                 
     }
         
-    private void recalc(Coord _p1, Angle a, double _mag){
+    public void recalc(Coord _p1, Angle a, double _mag){
         p1 = _p1.getLoc();
         angle = new Angle(a.getDeg());
         mag = _mag;
@@ -181,5 +186,9 @@ public class Line {
         shadows[1] = new Line(anchor_2.getP2(), getAng(), getMag());
         
         return shadows;
+    }
+    
+    public void mulMag(double d){
+        setMag(mag * d);
     }
 }
