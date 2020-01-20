@@ -9,6 +9,7 @@ import DataTypes.Coord;
 import DataTypes.Net;
 import Entities.Abstract.*;
 import java.awt.Color;
+import java.awt.Graphics2D;
 /**
  *
  * @author dawsp
@@ -24,5 +25,9 @@ public class TestPolygonEntity extends PolygonalEntity {
     
     public void PostUpdate(){
         //Just update, dummy
+    }
+    
+    public void DrawExtra(Graphics2D g){
+        //Just draw, dummy
     }
 }

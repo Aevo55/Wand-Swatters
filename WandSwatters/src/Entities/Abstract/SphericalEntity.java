@@ -1,12 +1,14 @@
 package Entities.Abstract;
 import DataTypes.*;
+import Utility.GraphicsEngine;
+import java.awt.Graphics2D;
 
 public abstract class SphericalEntity extends Entity{
     double radius;
     
     
     public SphericalEntity(Coord start, double rad){
-        center = start.getLoc();
+        center = start.copy();
         radius = rad;
     }
     
@@ -20,9 +22,13 @@ public abstract class SphericalEntity extends Entity{
     
     public void Update(){
         this.velocity.moveTo(center);
-        this.center.moveTo(velocity.getP2().getX(), velocity.getP2().getY());
-        this.velocity.rotateBy(curve);
-        this.velocity.moveTo(center);
+        if(!collided){
+            this.center.moveTo(velocity.getP2().getX(), velocity.getP2().getY());
+            this.velocity.rotateBy(curve);
+            this.velocity.moveTo(center);
+        }else{
+            collided = false;
+        }
     }
     
     @Override
@@ -30,4 +36,11 @@ public abstract class SphericalEntity extends Entity{
     
     @Override
     public abstract void DieMod();
+    
+    public abstract void DrawExtra(Graphics2D g);
+    
+    public void Draw(Graphics2D g){
+        GraphicsEngine.drawEntity(g, this);
+        DrawExtra(g);
+    }
 }

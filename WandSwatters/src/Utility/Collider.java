@@ -6,6 +6,7 @@
 package Utility;
 import Entities.Abstract.*;
 import DataTypes.*;
+import ReturnTypes.CoordAngle;
 import java.util.ArrayList;
 public abstract class Collider {
     public static boolean hit(Entity e, ArrayList<Entity> _e){
@@ -41,19 +42,28 @@ public abstract class Collider {
     }
     public static boolean hit(SphericalEntity e, Map m){
         boolean flag = false;
-        for(Net n: m.getWalls()){
-            Angle a = hit(e, n);
+        for(Wall w: m.getWalls()){
+            CoordAngle a = hit(e, w);
             if(a != null){
                 flag = true;
-                e.getVelocityRef().rotateTo(new Angle((2 * a.getDeg()) - e.getVelocity().getAng().getDeg()));
+                //e.collided = true;
+                //e.STOP = true;
+                Angle newAng = new Angle((2 * a.ang.getDeg()) - e.getVelocity().getAng().getDeg());
+                Angle newAng2 = e.getVelocity().getAng().closerMirror(a.ang);
+                
+                double newMag = Math.abs(Math.cos(a.ang.distToMirrored(e.getVelocity().getAng()).getRad()) * e.getVelocity().getMag());
+                e.getVelocityRef().rotateTo(newAng2);
+                
+                e.getVelocityRef().setMag(newMag);
+                e.getVelocityRef().mulMag(w.getSpring());
             }
         }
         return flag;
     }
     
-    public static Angle hit(SphericalEntity e, Net n){
+    public static CoordAngle hit(SphericalEntity e, Net n){
         for(Line l : n.lines){
-            Angle a = hit(e, l);
+            CoordAngle a = hit(e, l);
             if(a != null){
                 return a;
             }
@@ -61,49 +71,61 @@ public abstract class Collider {
         return null;
     }
     
-    public static Angle hit(SphericalEntity e, Line l){
+    public static CoordAngle hit(SphericalEntity e, Line l){
         Line[] shadows = l.getShadows(e.getRadius());
-        
-        if(hit(e.getVelocity(), shadows[0])){
-            return shadows[0].getAng();
-        }else if(hit(e.getVelocity(), shadows[1])){
-            return shadows[1].getAng();
+        CoordAngle a = new CoordAngle();
+        if(hit(e.getVelocity(), shadows[0]) != null){
+            a.coord = hit(e.getVelocity(), shadows[0]);
+            a.ang = shadows[0].getAng().copy();
+            return a;
+        }else if(hit(e.getVelocity(), shadows[1]) != null){
+            a.coord = hit(e.getVelocity(), shadows[1]);
+            a.ang = shadows[1].getAng().copy();
+            return a;
         }else if(e.getVelocity().getP2().distanceTo(l.getP1()) <= e.getRadius()){
-            return new Line(e.getCenter(), l.getP1()).getAng().offset(-90);
+            a.coord = l.getP1().copy();
+            a.ang = new Line(e.getCenter(), l.getP1()).getAng().offset(-90).copy();
+            return a;
         }else{
             return null;
         }
     }
     
-    public static boolean hit(Line l1, Line l2){
+    public static Coord hit(Line l1, Line l2){
         double x,y;
         if(l1.getSlope() == l2.getSlope()){
-            return false;
+            return null;
         }
         if(l1.getSlope() == Double.POSITIVE_INFINITY){
             x = l1.getP1().getX();
-            y = (x*l2.getSlope())+l2.getInt();
+            y = l2.getYAtX(x);
             if(Util.Inside(l1.getP1().getY(), y, l1.getP2().getY()) && Util.Inside(l2.getP1().getX(), x, l2.getP2().getX())){
-                return true;
+                return new Coord(x,y);
             }else{
-                return false;
+                return null;
             }
         }else if(l2.getSlope() == Double.POSITIVE_INFINITY){
            x = l2.getP1().getX();
-           y = (x*l1.getSlope())+l1.getInt();
+           y = l1.getYAtX(x);
            if(Util.Inside(l2.getP1().getY(), y, l2.getP2().getY()) && Util.Inside(l1.getP1().getX(), x, l1.getP2().getX())){
-                return true;
+                return new Coord(x,y);
            }else{
-               return false;
+               return null;
            }
         }else{
             x = (l2.getInt() - l1.getInt())/(l1.getSlope() - l2.getSlope());
             if(Util.Inside(l1.getP1().getX(), x, l1.getP2().getX())){
                 if(Util.Inside(l2.getP1().getX(), x, l2.getP2().getX())){
-                    return true;
+                    return new Coord(x,l1.getYAtX(x));
                 }
             }
-            return false;
+            return null;
         }
+    }
+    
+    static public double normalDistance(Line l, Coord c){
+        double d1 = Math.abs((l.getSlope() * c.getX())-(c.getY())+(l.getInt()));
+        double d2 = Math.sqrt(Math.pow(l.getSlope(), 2)+1);
+        return d1 / d2;
     }
 }

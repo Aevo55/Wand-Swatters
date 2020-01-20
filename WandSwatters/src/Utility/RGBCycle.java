@@ -42,32 +42,48 @@ public class RGBCycle {
     public void Cycle(Speed s){
         switch(s){
             case VerySlow:
+                Cycle(5);
+                break;
+            case Slow:
+                Cycle(10);
+                break;
+            case Normal:
+                Cycle(15);
+                break;
+            case Fast:
+                Cycle(20);
+                break;
+            case VeryFast:
+                Cycle(25);
+                break;
         }
     }
     
     private void Cycle(int i){
         if(b == 255 && g == 15){
             r+=(i);
+            if(r > 255)r=255;
         }
         if(b == 15 && g == 255){
             r-=i;
+            if(r<15)r=15;
         }
         if(r == 255 && b == 15){
             g+=i;
+            if(g>255)g=255;
         }
         if(r == 15 && b == 255){
             g-=i;
+            if(g<15)g=15;
         }
         if(g == 255 && r == 15){
             b+=i;
+            if(b>255)b=255;
         }
         if(g == 15 && r == 255){
             b-=i;
+            if(b<15)b=15;
         }
-    }
-    
-    private void Check(){
-        
     }
     
     public Color GetColor(){

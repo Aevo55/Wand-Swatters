@@ -29,7 +29,7 @@ public class Net {
         coords = new Coord[_coords.length];
         lines = new Line[_coords.length];
         for (int x = 0; x < _coords.length; x++) {
-            coords[x] = _coords[x].getLoc();
+            coords[x] = _coords[x].copy();
         }
         lines[coords.length - 1] = new Line(coords[coords.length - 1], coords[0]);
         for(int x = 0; x < coords.length - 1; x++){
@@ -75,7 +75,7 @@ public class Net {
     public Coord[] getCoords(){
         Coord[] c = new Coord[coords.length];
         for(int x = 0; x < coords.length; x++){
-            c[x] = coords[x].getLoc();
+            c[x] = coords[x].copy();
         }
         return c;
     }

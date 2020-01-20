@@ -5,6 +5,7 @@ import Entities.*;
 import Resources.Maps.MapLoader;
 import Utility.Collider;
 import Utility.GraphicsEngine;
+import Utility.Input;
 import Utility.Util;
 import java.awt.*;
 import javax.swing.*;
@@ -27,12 +28,14 @@ public class GameLoop extends JPanel implements Runnable {
     ArrayList<Entity> entities;
     MapLoader mapLoader;
     TestPolygonEntity manguyman;
-    TestSphericalEntity testplayer;
+    TestCircularEntity testplayer;
     
     boolean w = false, ww = false,
             a = false, aa = false,
             s = false, ss = false,
-            d = false, dd = false;
+            d = false, dd = false,
+            left = false, _left = false,
+            right = false, _right = false;
     
     public GameLoop() {
         
@@ -42,19 +45,17 @@ public class GameLoop extends JPanel implements Runnable {
         thread.start(); //begins the thread
         
     }
-    public void paintComponent(Graphics gc){
+    public void paintComponent(Graphics g){
         setOpaque(false); //wipes everything on the frame
-        super.paintComponent(gc); //creates the class for painting indavidual objects in the frame
-        gc.setColor(Color.WHITE);
-        gc.fillRect(0, 0, 920, 920);
-        
+        Graphics2D gc = (Graphics2D)g;
+        super.paintComponent(gc);
         if(!shapeToggle){
             GraphicsEngine.drawMap(gc, currMap);
         }else{
-            GraphicsEngine.drawEntity(gc, new TestSphericalEntity(new Coord(0,0), testplayer.getRadius(), Color.black));
-            GraphicsEngine.drawEntity(gc, new TestSphericalEntity(new Coord(200,100), testplayer.getRadius(), Color.black));
-            GraphicsEngine.drawEntity(gc, new TestSphericalEntity(new Coord(100,300), testplayer.getRadius(), Color.black));
-            GraphicsEngine.drawEntity(gc, new TestSphericalEntity(new Coord(200,200), testplayer.getRadius(), Color.black));
+            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(0,0), testplayer.getRadius(), Color.WHITE));
+            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(200,100), testplayer.getRadius(), Color.WHITE));
+            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(100,300), testplayer.getRadius(), Color.WHITE));
+            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(10,10), testplayer.getRadius(), Color.WHITE));
             
             GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[0].getShadows(testplayer.getRadius())[0]);
             GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[0].getShadows(testplayer.getRadius())[1]);
@@ -65,7 +66,8 @@ public class GameLoop extends JPanel implements Runnable {
             GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[3].getShadows(testplayer.getRadius())[0]);
             GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[3].getShadows(testplayer.getRadius())[1]);
         }
-        entities.forEach((e) -> GraphicsEngine.drawEntity(gc, e));
+        entities.forEach((e) -> e.Draw(gc));
+        //GraphicsEngine.drawLine(gc, testplayer.getVelocity().mulMag(100));
     }
     public void keyPressed(KeyEvent evt){
         switch(evt.getKeyCode()){
@@ -95,6 +97,18 @@ public class GameLoop extends JPanel implements Runnable {
                 dd = true;
                 aa = false;
                 break;
+            case KeyEvent.VK_LEFT:
+                left = true;
+                _left = true;
+                _right = false;
+                break;
+            case KeyEvent.VK_RIGHT:
+                right = true;
+                _right = true;
+                _left = false;
+                break;
+            case KeyEvent.VK_SHIFT:
+                Input.input.shift = true;
         }
     }
 
@@ -131,7 +145,22 @@ public class GameLoop extends JPanel implements Runnable {
                     aa = true;
                 }
                 break;
-                
+            case KeyEvent.VK_LEFT:
+                left = false;
+                _left = false;
+                if(right){
+                    _right = true;
+                }
+                break;
+            case KeyEvent.VK_RIGHT:
+                right = false;
+                _right = false;
+                if(left){
+                    _left = true;
+                }
+                break;
+            case KeyEvent.VK_SHIFT:
+                Input.input.shift = false;
         }
     }
     
@@ -142,7 +171,7 @@ public class GameLoop extends JPanel implements Runnable {
         entities = new ArrayList<>();
         currMap = mapLoader.getMap("Map 0");
         
-        testplayer = new TestSphericalEntity(new Coord(250,250), 10);
+        testplayer = new TestCircularEntity(new Coord(550,250), 10);
         //testplayer.getCurveRef().setDeg(5);
         entities.add(testplayer);
         
@@ -160,33 +189,22 @@ public class GameLoop extends JPanel implements Runnable {
             if(currTime != fpsTracker){
                 currFPS = 1000/(currTime - fpsTracker);
                 fpsTracker = System.currentTimeMillis();
-                Util.Sysout(currFPS);
+                //Util.Sysout(currFPS);
             }
+            
+            //Util.Sysout(testplayer.getView().getAng().distToMirrored(new Angle(0)).getDeg());
+            //Util.Sysout(testplayer.getView().getAng().distTo(new Angle(0)).getDeg());
+            //Util.Sysout("");
             
             repaint();
             
-            if(ww || aa || ss || dd){
-                int wi = ww ? 1 : 0;
-                int ai = aa ? 1 : 0;
-                int si = ss ? 1 : 0;
-                int di = dd ? 1 : 0;
-                
-                Line lw = new Line(new Coord(0,0), new Angle(270), wi);
-                Line la = new Line(new Coord(0,0), new Angle(180), ai);
-                Line ls = new Line(new Coord(0,0), new Angle(90), si);
-                Line ld = new Line(new Coord(0,0), new Angle(0), di);
-                
-                testplayer.getVelocityRef().addTo(lw);
-                testplayer.getVelocityRef().addTo(la);
-                testplayer.getVelocityRef().addTo(ls);
-                testplayer.getVelocityRef().addTo(ld);
-                
-                if(testplayer.getVelocity().getMag() > 5){
-                    testplayer.getVelocityRef().setMag(5);
-                }
-            }else{
-                testplayer.getVelocityRef().mulMag(0.95);
-            }
+            Input.input.w = ww;
+            Input.input.a = aa;
+            Input.input.s = ss;
+            Input.input.d = dd;
+            Input.input.left = _left;
+            Input.input.right = _right;
+            
             
             boolean colliderFlag = true;
             while(colliderFlag == true){
@@ -198,13 +216,15 @@ public class GameLoop extends JPanel implements Runnable {
             
             
             entities.forEach((e) -> e.Tick());
-            
+            //*
             try {
-                //**/Thread.sleep(30);/*/
-                Thread.sleep(16,500000);//*/
+                //Thread.sleep(16,500000);
+                Thread.sleep(16);
+                //Thread.sleep(8,250000);
             } catch (InterruptedException ex) {
                 Logger.getLogger(GameLoop.class.getName()).log(Level.SEVERE, null, ex);
             }
+            //*/
         }
     } 
 } 

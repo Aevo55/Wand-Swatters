@@ -10,6 +10,11 @@ public class Angle {
         deg = _deg;
         fix();
     }
+    
+    public Angle (double _rad, boolean ah){
+        deg = Math.toDegrees(_rad);
+        fix();
+    }
     public double getDeg(){
         return deg;
     }
@@ -53,5 +58,37 @@ public class Angle {
     
     public Angle copy(){
         return new Angle(getDeg());
+    }
+    
+    public Angle distTo(Angle a){
+        double d = a.deg - deg;
+        d = Math.abs(Math.abs((d + 180)%360)-180); 
+        return new Angle(d);
+    }
+    
+    public Angle distToMirrored(Angle a){
+        Angle _a = distTo(a);
+        Angle __a = distTo(a.offset(180));
+        if(_a.deg > __a.deg){
+            return __a;
+        }else{
+            return _a;
+        }
+    }
+    
+    public Angle closerMirror(Angle a){
+        if(distTo(a).getDeg() <= distToMirrored(a).getDeg()){
+            return a;
+        }else{
+            return a.offset(180);
+        }
+    }
+    
+    public Angle furtherMirror(Angle a){
+        if(distTo(a).getDeg() >= distToMirrored(a).getDeg()){
+            return a;
+        }else{
+            return a.offset(180);
+        }
     }
 }

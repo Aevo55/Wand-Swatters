@@ -1,6 +1,8 @@
 package Entities.Abstract;
 import DataTypes.*;
+import Utility.GraphicsEngine;
 import java.awt.Color;
+import java.awt.Graphics2D;
 
 public abstract class PolygonalEntity extends Entity{
     protected Net outline;
@@ -14,11 +16,15 @@ public abstract class PolygonalEntity extends Entity{
     
     @Override
     public void Update(){
-        this.outline.rotate(center, rotation);
-        this.outline.moveBy(velocity);
-        this.velocity.rotateBy(curve);
-        this.center.moveBy(velocity.getRun(), velocity.getRise());
-        this.outline.recalc(outline.lines);
+        if(!collided){
+            this.outline.rotate(center, rotation);
+            this.outline.moveBy(velocity);
+            this.velocity.rotateBy(curve);
+            this.center.moveBy(velocity.getRun(), velocity.getRise());
+            this.outline.recalc(outline.lines);
+        }else{
+            collided = false;
+        }
     }
     
     @Override
@@ -49,5 +55,12 @@ public abstract class PolygonalEntity extends Entity{
     
     public void setRotation(Angle a){
         rotation = a.copy();
+    }
+    
+    public abstract void DrawExtra(Graphics2D g);
+    
+    public void Draw(Graphics2D g){
+        GraphicsEngine.drawEntity(g, this);
+        DrawExtra(g);
     }
 }

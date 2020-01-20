@@ -6,11 +6,15 @@
 package Entities.Abstract;
 import DataTypes.*;
 import java.awt.Color;
+import java.awt.Graphics2D;
+import java.util.ArrayList;
 /**
  *
  * @author dawsp
  */
 public abstract class Entity {
+    public boolean collided = false;
+    public boolean STOP = false;
     protected boolean dead = false;
     protected Line velocity = new Line(new Coord(0,0), new Coord(0,0));
     protected Coord center;
@@ -50,7 +54,7 @@ public abstract class Entity {
     }
     
     public Coord getCenter(){
-        return center.getLoc();
+        return center.copy();
     }
     
     public Coord getCenterRef(){
@@ -76,4 +80,6 @@ public abstract class Entity {
     public Angle getCurveRef(){
         return curve;
     }
+    
+    public abstract void Draw(Graphics2D g);
 }

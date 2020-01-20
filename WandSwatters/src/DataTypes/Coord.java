@@ -10,6 +10,11 @@ public class Coord {
         Y = 0;
     }
     
+    public Coord(Point p){
+        X = p.x;
+        Y = p.y;
+    }
+    
     public Coord(double _x, double _y){
         X = _x;
         Y = _y;
@@ -28,6 +33,11 @@ public class Coord {
     public void moveTo(double x, double y){
         X = x;
         Y = y;
+    }
+    
+    public void moveTo(Coord c){
+        X = c.X;
+        Y = c.Y;
     }
     
     public double getX(){
@@ -54,7 +64,7 @@ public class Coord {
         Y = y;
     }
     
-    public Coord getLoc(){
+    public Coord copy(){
         return new Coord(getX(), getY());
     }
     
@@ -94,6 +104,6 @@ public class Coord {
     }
     
     public double distanceTo(Coord c){
-        return new Line(this, c).getMag();
+        return Math.sqrt(Math.pow(X - c.X, 2)+Math.pow(Y - c.Y,2));
     }
 }

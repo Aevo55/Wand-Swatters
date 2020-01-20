@@ -5,6 +5,8 @@
  */
 package DataTypes;
 import DataTypes.*;
+import ReturnTypes.CoordAngle;
+import Utility.Collider;
 /**
  *
  * @author dawsp
@@ -17,6 +19,10 @@ public class Line {
     private double rise, run;
     private Coord p1, p2;
     private double mag;
+    
+    public Line(){
+        recalc(new Coord(0,0), new Coord(0,0));
+    }
     
     public Line(Coord _p1, Coord _p2, double _mag){
         recalc(_p1, _p2);
@@ -34,8 +40,8 @@ public class Line {
         recalc(_p1, a, mag);
     }
     public void recalc(Coord _p1, Coord _p2){
-        p1 = _p1.getLoc();
-        p2 = _p2.getLoc();
+        p1 = _p1.copy();
+        p2 = _p2.copy();
         
         rise = p2.getY() - p1.getY();
         run = p2.getX() - p1.getX();
@@ -55,7 +61,7 @@ public class Line {
     }
         
     public void recalc(Coord _p1, Angle a, double _mag){
-        p1 = _p1.getLoc();
+        p1 = _p1.copy();
         angle = new Angle(a.getDeg());
         mag = _mag;
         if(a.getDeg() == 90.0){
@@ -81,7 +87,7 @@ public class Line {
     }
     
     public void moveTo(Coord c){
-        p1 = c.getLoc();
+        p1 = c.copy();
         p2 = p1.offset(run, rise);
         recalc(p1, p2);
     }
@@ -92,20 +98,26 @@ public class Line {
         recalc(p1, p2);
     }
     
-    public void addTo(Line l){
+    public Line addTo(Line l){
         p2 = new Coord(p2.getX() + l.run, p2.getY() + l.rise);
         recalc(p1, p2);
+        return this;
     }
     
-    public void addTo(double x, double y){
+    public Line addTo(double x, double y){
         p2 = new Coord(p2.getX() + x, p2.getY() + y);
         recalc(p1, p2);
+        return this;
     }
     
     public void addTo(Angle a, double m){
         Line temp = new Line(p2, a, m);
-        p2 = temp.p2.getLoc();
+        p2 = temp.p2.copy();
         recalc(p1,p2);
+    }
+    
+    public void setTo(Line l){
+        recalc(l.getP1(), l.getP2());
     }
     
     public void setRise(double y){
@@ -145,11 +157,11 @@ public class Line {
     }
     
     public Coord getP1(){
-        return p1.getLoc();
+        return p1.copy();
     }
     
     public Coord getP2(){
-        return p2.getLoc();
+        return p2.copy();
     }
     
     public double getTanSlope(){
@@ -188,7 +200,8 @@ public class Line {
         return shadows;
     }
     
-    public void mulMag(double d){
+    public Line mulMag(double d){
         setMag(mag * d);
+        return this;
     }
 }
