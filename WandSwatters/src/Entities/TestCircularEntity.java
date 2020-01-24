@@ -53,7 +53,7 @@ public class TestCircularEntity extends SphericalEntity{
             temp.addTo(ls);
             temp.addTo(ld);
             
-            temp.setMag(1);
+            temp.setMag(3);
             
             double mag = velocity.getMag();
             if(!STOP){
@@ -73,13 +73,13 @@ public class TestCircularEntity extends SphericalEntity{
             
         }
         if(Input.input.left){
-            view.rotateBy(new Angle(-5));
+            view.rotateBy(new Angle(-2));
         }else if(Input.input.right){
-            view.rotateBy(new Angle(5));
+            view.rotateBy(new Angle(2));
         }
         view.setMag(20);
         view.moveTo(center);
-        this.getVelocityRef().mulMag(0.95);
+        this.getVelocityRef().mulMag(0.8);
         c.Cycle(RGBCycle.Speed.VeryFast);
         this.setCol(c.GetColor());
     }

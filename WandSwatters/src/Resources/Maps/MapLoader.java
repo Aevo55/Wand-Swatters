@@ -21,7 +21,7 @@ public class MapLoader {
         
         m0w0 = new Wall(m0n0, Color.RED, 0);
         _background = new Wall(background, Color.WHITE, 1);
-        m0 = new Map("Map 0", _background, m0w0 /*whats this?*/);
+        m0 = new Map("Map 0", /*_background,*/ m0w0 /*whats this?*/);
 
         mapList.add(m0);
     }

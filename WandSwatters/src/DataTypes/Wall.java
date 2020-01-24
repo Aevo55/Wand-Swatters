@@ -15,6 +15,11 @@ public class Wall extends Net{
         bounciness = s;
     }
     
+    public Wall(Net n, Color c){
+        super (new Net(n));
+        color = c;
+    }
+    
     public void setCol(Color c){
         color = c;
     }

@@ -7,6 +7,7 @@ package DataTypes;
 import DataTypes.*;
 import ReturnTypes.CoordAngle;
 import Utility.Collider;
+import java.util.List;
 /**
  *
  * @author dawsp
@@ -180,12 +181,14 @@ public class Line {
         return (slope * x) + intercept;
     }
     
-    public void rotateBy(Angle a){
+    public Line rotateBy(Angle a){
         recalc(this.getP1(), this.angle.offset(a), this.mag);
+        return this;
     }
     
-    public void rotateTo(Angle a){
+    public Line rotateTo(Angle a){
         recalc(this.getP1(), a, this.mag);
+        return this;
     }
     
     public Line[] getShadows(double r){
@@ -203,5 +206,30 @@ public class Line {
     public Line mulMag(double d){
         setMag(mag * d);
         return this;
+    }
+    
+    public boolean foundIn(List<Coord> c){
+        for(int n = 0; n < c.size(); n++){
+            if(p1.equals(c.get(n))){
+                for(int m = n; m < c.size(); m++){
+                    if(p2.equals(c.get(m))){
+                        return true;
+                    }
+                }
+                return false;
+            }else if(p2.equals(c.get(n))){
+                for(int m = n; m < c.size(); m++){
+                    if(p1.equals(c.get(m))){
+                        return true;
+                    }
+                }
+                return false;
+            }
+        }
+        return false;
+    }
+    
+    public Angle getAngRef(){
+        return angle;
     }
 }

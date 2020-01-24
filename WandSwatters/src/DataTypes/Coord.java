@@ -91,19 +91,19 @@ public class Coord {
 
     @Override
     public boolean equals(Object obj) {
-        if (this == obj) {
-            return true;
-        }
-        if (obj == null) {
+        if(obj.getClass().equals(Coord.class)){
+            Coord c = (Coord)obj;
+            return ((X == c.X) && (Y == c.Y));
+        }else{
             return false;
         }
-        if (getClass() != obj.getClass()) {
-            return false;
-        }
-        return equals((Coord)obj);
     }
     
     public double distanceTo(Coord c){
-        return Math.sqrt(Math.pow(X - c.X, 2)+Math.pow(Y - c.Y,2));
+        return new Line(this, c).getMag();
+    }
+    
+    public Double angleTo(Coord c){
+        return new Line(this, c).getAng().getDeg();
     }
 }

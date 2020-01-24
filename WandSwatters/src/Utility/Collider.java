@@ -37,7 +37,8 @@ public abstract class Collider {
         if(SphericalEntity.class.isInstance(e)){
             return hit((SphericalEntity)e,m);
         }else{
-            return hit((PolygonalEntity)e,m);
+            //return hit((PolygonalEntity)e,m);
+            return false;
         }
     }
     public static boolean hit(SphericalEntity e, Map m){

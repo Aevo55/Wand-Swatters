@@ -8,6 +8,7 @@ package DataTypes;
 import Utility.Util;
 import java.awt.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 
 /**
@@ -17,11 +18,18 @@ import java.util.LinkedHashSet;
 public class Net {
     public Coord[] coords;
     public Line[] lines;
+    
+    
+            
     public Net(Coord... _coords){
         recalc(_coords);
     }
     
     public Net(Line... _lines){
+        recalc(_lines);
+    }
+    
+    public Net(ArrayList<Line> _lines){
         recalc(_lines);
     }
     
@@ -31,13 +39,27 @@ public class Net {
         for (int x = 0; x < _coords.length; x++) {
             coords[x] = _coords[x].copy();
         }
-        lines[coords.length - 1] = new Line(coords[coords.length - 1], coords[0]);
-        for(int x = 0; x < coords.length - 1; x++){
-            lines[x] = new Line(coords[x], coords[x+1]);
+        for(int x = 0; x < coords.length; x++){
+            lines[x] = new Line(coords[x], coords[(x+1)%coords.length]);
         }
     }
     
     public void recalc(Line... _lines){
+        ArrayList<Coord> _tempcoords = new ArrayList<>();
+        for(Line l : _lines){
+            _tempcoords.add(l.getP1());
+            _tempcoords.add(l.getP2());
+        }
+        ArrayList<String> hashes = new ArrayList<>();
+        for(Coord c : _tempcoords){
+            hashes.add(c.toString());
+        }
+        ArrayList<String> hashset = new ArrayList<>(new LinkedHashSet<>(hashes));
+        ArrayList<Coord> _coords = new ArrayList<>(Util.HashToCoord(hashset, _tempcoords));
+        recalc(_coords.toArray(new Coord[_coords.size()]));
+    }
+    
+    public void recalc(ArrayList<Line> _lines){
         ArrayList<Coord> _tempcoords = new ArrayList<>();
         for(Line l : _lines){
             _tempcoords.add(l.getP1());
@@ -110,9 +132,9 @@ public class Net {
     }
     
     public ArrayList<Line> getLinesList(){
-        ArrayList<Line> l = new ArrayList<Line>();
+        ArrayList<Line> l = new ArrayList<>();
         for (Line _l : lines){
-            l.add(_l);
+            l.add(_l.copy());
         }
         return l;
     }

@@ -15,4 +15,12 @@ import DataTypes.Coord;
 public class CoordAngle {
     public Angle ang;
     public Coord coord;
+    public CoordAngle(Angle _ang, Coord _c){
+        ang = _ang;
+        coord = _c;
+    }
+    public CoordAngle(){
+        ang = new Angle();
+        coord = new Coord();
+    }
 }

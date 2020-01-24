@@ -5,6 +5,7 @@ import Entities.*;
 import Resources.Maps.MapLoader;
 import Utility.Collider;
 import Utility.GraphicsEngine;
+import Utility.GraphicsEngine3D;
 import Utility.Input;
 import Utility.Util;
 import java.awt.*;
@@ -14,8 +15,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 public class GameLoop extends JPanel implements Runnable { 
     Thread thread;
@@ -52,22 +55,12 @@ public class GameLoop extends JPanel implements Runnable {
         if(!shapeToggle){
             GraphicsEngine.drawMap(gc, currMap);
         }else{
-            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(0,0), testplayer.getRadius(), Color.WHITE));
-            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(200,100), testplayer.getRadius(), Color.WHITE));
-            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(100,300), testplayer.getRadius(), Color.WHITE));
-            GraphicsEngine.drawEntity(gc, new TestCircularEntity(new Coord(10,10), testplayer.getRadius(), Color.WHITE));
-            
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[0].getShadows(testplayer.getRadius())[0]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[0].getShadows(testplayer.getRadius())[1]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[1].getShadows(testplayer.getRadius())[0]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[1].getShadows(testplayer.getRadius())[1]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[2].getShadows(testplayer.getRadius())[0]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[2].getShadows(testplayer.getRadius())[1]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[3].getShadows(testplayer.getRadius())[0]);
-            GraphicsEngine.drawLine(gc, currMap.getWalls().get(0).lines[3].getShadows(testplayer.getRadius())[1]);
+            GraphicsEngine3D.DrawMap(gc, testplayer.getView(), currMap);
         }
         entities.forEach((e) -> e.Draw(gc));
-        //GraphicsEngine.drawLine(gc, testplayer.getVelocity().mulMag(100));
+        GraphicsEngine.drawLine(gc, testplayer.getView().copy().mulMag(100).rotateBy(new Angle(30)));
+        GraphicsEngine.drawLine(gc, testplayer.getView().copy().mulMag(100).rotateBy(new Angle(-30)));
+        
     }
     public void keyPressed(KeyEvent evt){
         switch(evt.getKeyCode()){
@@ -171,7 +164,7 @@ public class GameLoop extends JPanel implements Runnable {
         entities = new ArrayList<>();
         currMap = mapLoader.getMap("Map 0");
         
-        testplayer = new TestCircularEntity(new Coord(550,250), 10);
+        testplayer = new TestCircularEntity(new Coord(300,350), 10);
         //testplayer.getCurveRef().setDeg(5);
         entities.add(testplayer);
         
